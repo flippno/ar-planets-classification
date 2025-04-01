@@ -1,0 +1,11 @@
+Model Information:
+* title:	Saturno (Saturn)
+* source:	https://sketchfab.com/3d-models/saturno-saturn-c9944949f8c54f0192c8e8296aab9df1
+* author:	Laura Leonardi (https://sketchfab.com/lauraleonardi)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Saturno (Saturn)" (https://sketchfab.com/3d-models/saturno-saturn-c9944949f8c54f0192c8e8296aab9df1) by Laura Leonardi (https://sketchfab.com/lauraleonardi) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
