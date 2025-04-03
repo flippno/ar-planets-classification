@@ -121,8 +121,20 @@ function preprocessFrame(video) {
   });
 }
 
+let running = false; // Flag to control detection loop
+
+// Arrays to record FPS and latency measurements
+let fpsRecords = [];
+let latencyRecords = [];
+
 // Start function: starts MindAR, renders the scene, and begins prediction loop
 const start = async () => {
+  running = true; // Enable detection loop
+
+  // Clear any previous records
+  fpsRecords = [];
+  latencyRecords = [];
+
   await mindarThree.start();
   renderer.setAnimationLoop(() => {
     renderer.render(scene, camera);
@@ -130,6 +142,11 @@ const start = async () => {
 
   const video = mindarThree.video;
   let skipCount = 0;
+
+  const fpsDisplay = document.getElementById("fpsDisplay"); // Add a div in HTML for FPS display
+  const latencyDisplay = document.getElementById("latencyDisplay"); // Add a div in HTML for latency display
+
+  let lastFrameTime = performance.now(); // Initialize last frame timestamp
 
   const detect = async () => {
     // Skip frames to reduce processing load
@@ -140,6 +157,8 @@ const start = async () => {
     }
     skipCount = 0;
 
+    const startTime = performance.now(); // Start timing
+
     // Preprocess the video frame and predict
     const inputTensor = preprocessFrame(video);
     const predictionTensor = model.predict(inputTensor);
@@ -149,6 +168,22 @@ const start = async () => {
     // Clean up the tensors created in this frame
     inputTensor.dispose();
     predictionTensor.dispose();
+
+    const endTime = performance.now(); // End timing
+
+    // Calculate latency in ms for this prediction
+    const latency = endTime - startTime;
+    latencyRecords.push(latency);
+
+    // Calculate FPS based on the time between frames
+    const currentTime = performance.now();
+    const fps = 1000 / (currentTime - lastFrameTime);
+    lastFrameTime = currentTime;
+    fpsRecords.push(fps);
+
+    // Update UI
+    fpsDisplay.innerText = `FPS: ${fps.toFixed(2)}`;
+    latencyDisplay.innerText = `Latency: ${latency.toFixed(2)} ms`;
 
     // Map predictions to corresponding class names.
     // Adjust this part based on how your model’s output is ordered.
@@ -172,8 +207,11 @@ const start = async () => {
       planetButton.style.display = "none";
     }
 
-    window.requestAnimationFrame(detect);
+    if (running) {
+      window.requestAnimationFrame(detect);
+    }
   };
+
   window.requestAnimationFrame(detect);
 };
 
@@ -198,7 +236,26 @@ startButton.addEventListener("click", () => {
   start();
 });
 
+// Function to compute the average of an array
+const calculateAverage = (array) => {
+  if (array.length === 0) return 0;
+  const sum = array.reduce((acc, curr) => acc + curr, 0);
+  return sum / array.length;
+};
+
 stopButton.addEventListener("click", () => {
+  running = false; // Stop detection loop
   mindarThree.stop();
   renderer.setAnimationLoop(null);
+
+  // Calculate average FPS and latency
+  const avgFPS = calculateAverage(fpsRecords);
+  const avgLatency = calculateAverage(latencyRecords);
+
+  // Display the averages in the UI
+  const fpsDisplay = document.getElementById("fpsDisplay");
+  const latencyDisplay = document.getElementById("latencyDisplay");
+
+  fpsDisplay.innerText = `Avg FPS: ${avgFPS.toFixed(2)}`;
+  latencyDisplay.innerText = `Avg Latency: ${avgLatency.toFixed(2)} ms`;
 });
