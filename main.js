@@ -135,8 +135,19 @@ const start = async () => {
   fpsRecords = [];
   latencyRecords = [];
 
+  const rotationSpeed = 0.01; // Adjust as needed
+
+  function rotateVisiblePlanet() {
+    Object.values(planets).forEach((planetMesh) => {
+      if (planetMesh.visible) {
+        planetMesh.rotation.y += rotationSpeed;
+      }
+    });
+  }
+
   await mindarThree.start();
   renderer.setAnimationLoop(() => {
+    rotateVisiblePlanet();
     renderer.render(scene, camera);
   });
 
@@ -194,7 +205,7 @@ const start = async () => {
     let detectedPlanet = null;
     predictions.forEach((probability, index) => {
       // Adjust threshold values as needed.
-      if (probability >= 0.75) {
+      if (probability >= 0.95) {
         detectedPlanet = classNames[index];
       }
     });
