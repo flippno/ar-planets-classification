@@ -5,7 +5,7 @@ import { loadGLTF } from './loader.js';
 // Initialize MindAR and Three.js
 const mindarThree = new MindARThree({
   container: document.querySelector("#container"),
-  imageTargetSrc: "./assets/targets/planets.mind"
+  imageTargetSrc: "./assets/targets/new-planets.mind"
 });
 
 const planetButton = document.getElementById("planet");
@@ -98,10 +98,13 @@ async function loadAssets() {
 }
 const planets = await loadAssets();
 
+const loadingIndicator = document.getElementById("loadingIndicator");
 // --- Load your own TensorFlow.js model ---
 // Adjust modelURL to the correct path where your model files reside.
-const modelURL = "./my-planet-model1.json";
+const modelURL = "./my-planet-model3.json";
 const model = await tf.loadLayersModel(modelURL);
+
+loadingIndicator.style.display = "none";
 console.log("Custom model loaded successfully");
 
 // Specify the input dimensions expected by your model
@@ -135,7 +138,7 @@ const start = async () => {
   fpsRecords = [];
   latencyRecords = [];
 
-  const rotationSpeed = 0.01; // Adjust as needed
+  const rotationSpeed = 0.03; // Adjust as needed
 
   function rotateVisiblePlanet() {
     Object.values(planets).forEach((planetMesh) => {
